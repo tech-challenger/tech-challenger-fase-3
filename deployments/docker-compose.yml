@@ -1,0 +1,32 @@
+version: '3.1'
+
+services:
+  mongodb:
+    image: mongo
+    networks:
+      - production-network
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: tech_challenge
+  app:
+    build:
+      dockerfile: ./Dockerfile
+      context: ../
+    image: tech-challenge
+    container_name: tech-challenge-api
+    volumes:
+        - ./data/db:/data/db
+    ports:
+      - "8080:8080"
+    networks:
+      - production-network
+    environment:
+      MONGO_URL: mongodb://mongodb:27017
+      MONGO_DATABASE: tech_challenge
+      DOMAIN_REPOSITORY_ORDER_DATASTORE: mongo
+    depends_on:
+      - mongodb
+networks:
+  production-network:
+    driver: bridge
